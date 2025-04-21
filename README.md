@@ -1,124 +1,71 @@
-AWS Docker CI/CD Cloud Project
+# 🚀 AWS Docker CI/CD Pipeline
 
-Overview
+A real-world infrastructure automation project that demonstrates how to build a **CI/CD pipeline** using **Docker**, **GitHub Actions**, and **AWS ECS** with **Terraform**.
 
-This project sets up a CI/CD pipeline for deploying Dockerized applications on AWS using Terraform for infrastructure automation. The pipeline automates the build, test, and deployment processes to ensure efficient and consistent software delivery.
+## 🔧 Tech Stack
 
-Technologies Used
+- **AWS**: ECS, EC2, VPC, IAM, CloudWatch
+- **CI/CD**: GitHub Actions
+- **Infrastructure as Code**: Terraform
+- **Containerization**: Docker
 
-AWS (ECS, ECR, CodePipeline, CodeBuild, CodeDeploy, IAM, S3, etc.)
+## 📦 Features
 
-Terraform (Infrastructure as Code)
+- Automates deployment of Dockerized applications to AWS ECS
+- Provisions infrastructure with Terraform (VPC, IAM, ECS)
+- Uses GitHub Actions to build, push, and deploy containers
+- Integrates CloudWatch for logging and monitoring
+- Secures deployments with environment variable injection
 
-Docker (Containerization)
+## 🧱 Architecture Overview
 
-GitHub Actions (CI/CD automation)
+```
+GitHub → GitHub Actions → Docker Build & Push → Terraform Infra → AWS ECS Fargate → CloudWatch Logs
+```
 
-PowerShell (Scripting)
+## 🔐 Security Practices
 
-VS Code (Development environment)
+- Secrets managed via GitHub Secrets
+- IAM roles scoped with least privilege
+- Logs centralized with CloudWatch for audit and observability
 
-Architecture
+## 📂 Folder Structure
 
-The project follows a three-tier architecture, including:
+```
+.
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+├── .github/workflows/
+│   └── deploy.yml
+├── app/
+│   └── Dockerfile
+│   └── app.py
+└── README.md
+```
 
-Frontend: A containerized web application hosted on AWS ECS.
+## ✅ What You’ll Learn
 
-Backend: API services deployed as Docker containers.
+- How to structure production-grade Terraform
+- How to automate ECS deployments via CI/CD
+- How to inject and secure environment variables in pipelines
+- How to use CloudWatch to debug and monitor services
 
-Database: AWS RDS or DynamoDB (based on requirements).
+## 🧠 Lessons Learned
 
-Features
+- Secrets management is critical in automation
+- Terraform modules reduce redundancy in cloud infrastructure
+- CI/CD pipelines must include error catching and rollback logic
 
-Automated Deployment: Uses GitHub Actions to trigger deployments upon code push.
+## 🧪 Future Improvements
 
-Infrastructure as Code (IaC): Terraform provisions AWS infrastructure.
+- Add staging environment
+- Add unit testing before Docker build
+- Terraform remote state with backend locking
 
-Dockerized Applications: Ensures portability and scalability.
+## 👨‍💻 Author
 
-Security Best Practices: Implements IAM roles, encrypted storage, and least privilege access.
-
-Setup Instructions
-
-Prerequisites
-
-AWS Account
-
-Terraform installed (Download)
-
-Docker installed (Download)
-
-GitHub repository set up with secrets for AWS credentials
-
-Installation
-
-Clone the repository:
-
-git clone https://github.com/your-username/aws-docker-ci-cd.git
-cd aws-docker-ci-cd
-
-Initialize Terraform:
-
-terraform init
-
-Plan the infrastructure:
-
-terraform plan
-
-Apply Terraform to create resources:
-
-terraform apply --auto-approve
-
-Push Docker image to AWS ECR:
-
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
-docker build -t my-app .
-docker tag my-app:latest <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
-docker push <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
-
-Trigger GitHub Actions Workflow:
-
-Push a commit to the main branch to start the CI/CD pipeline.
-
-Project Structure
-
-├── terraform/                   # Terraform configuration files
-│   ├── main.tf                  # AWS resources
-│   ├── variables.tf              # Variables
-│   ├── outputs.tf                # Outputs
-│   ├── backend.tf                # Terraform backend config
-├── app/                         # Dockerized application code
-│   ├── Dockerfile               # Docker configuration
-│   ├── src/                     # Application source code
-├── .github/workflows/           # GitHub Actions CI/CD workflows
-│   ├── ci-cd.yml                # CI/CD pipeline definition
-├── scripts/                     # PowerShell automation scripts
-├── README.md                    # Project documentation
-
-Deployment
-
-Once Terraform and GitHub Actions are set up, every push to the main branch will:
-
-Build the Docker image
-
-Push it to AWS ECR
-
-Deploy to AWS ECS
-
-Cleanup
-
-To delete all infrastructure:
-
-terraform destroy --auto-approve
-
-Future Enhancements
-
-Add monitoring with AWS CloudWatch.
-
-Implement Blue/Green deployment using AWS CodeDeploy.
-
-Enable multi-region deployment for high availability.
-
-Contact
-
-For any questions, feel free to reach out or create an issue in the repository.
+**Steven Lewis**  
+Cloud Engineer | AWS Certified  
+GitHub: [sjlewis25](https://github.com/sjlewis25)
