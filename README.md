@@ -20,8 +20,6 @@ It reflects a real-world use case for teams who want to containerize apps and au
   - Private ECR repositories
   - VPC/subnet isolation (if applicable)
 
-![Architecture Diagram](./assets/aws-docker-cicd-arch.png)
-
 ---
 
 ## Key Features
