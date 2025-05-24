@@ -19,7 +19,7 @@ Amazon ECS (Fargate): Deploys the container as a service.
 S3: Optional usage for storing Terraform state remotely.
 
 
- (Add your diagram here)
+
 
 Features
 
