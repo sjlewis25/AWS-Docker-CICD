@@ -1,135 +1,118 @@
-# AWS Docker CI/CD Project
+AWS Docker CI/CD Pipeline Project
 
-## Overview
-This project demonstrates a complete CI/CD pipeline on AWS for deploying Dockerized applications. The goal is to show how code changes are automatically built, tested, and deployed into a scalable cloud environment with no manual intervention.
+This project demonstrates a real-world, production-style CI/CD pipeline using Docker, GitHub Actions, and AWS (ECS, ECR, S3) managed entirely with Terraform.
 
-It reflects a real-world use case for teams who want to containerize apps and automate deployment using modern DevOps practices.
+Purpose
 
----
+The goal of this project is to automate the process of building, testing, and deploying Dockerized applications using a secure, scalable AWS architecture—without touching the AWS Console.
 
-## Architecture
+Architecture Overview
 
-- **Source Control**: GitHub
-- **CI/CD Pipeline**: GitHub Actions (or AWS CodePipeline)
-- **Container Registry**: Amazon ECR
-- **Compute**: ECS Fargate (or EC2 with Docker)
-- **Infrastructure**: Provisioned with Terraform
-- **Monitoring**: CloudWatch (basic setup)
-- **Security**:
-  - IAM roles scoped to least privilege
-  - Private ECR repositories
-  - VPC/subnet isolation (if applicable)
+GitHub Actions: Triggers on code push to build and test Docker image.
 
----
+Amazon ECR: Stores the built Docker image.
 
-## Key Features
+Terraform: Provisions all AWS infrastructure including ECS, ECR, and supporting IAM roles.
 
-- Push-to-deploy pipeline: code pushed to `main` triggers a full redeploy
-- Docker image is automatically built and pushed to ECR
-- ECS service (or EC2) pulls new image and restarts with zero downtime
-- Configurable via Terraform for repeatable, version-controlled deployments
+Amazon ECS (Fargate): Deploys the container as a service.
 
----
+S3: Optional usage for storing Terraform state remotely.
 
-## How It Works
 
-1. Developer pushes code to GitHub
-2. GitHub Actions workflow:
-   - Lints Terraform
-   - Builds Docker image
-   - Pushes image to Amazon ECR
-   - Deploys infra (if changed)
-3. ECS (or EC2) service pulls the new image and restarts container
+ (Add your diagram here)
 
----
+Features
 
-## Deployment Steps
+Push-to-deploy workflow
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/sjlewis25/aws-docker-cicd.git
-cd aws-docker-cicd
-```
+Terraform IaC with remote backend support
 
-### 2. Set your variables
-Edit `terraform.tfvars` or use environment variables to configure:
-- AWS region
-- ECR repo name
-- VPC/Subnet IDs
-- ECS cluster name (if applicable)
+Rollback-ready ECS deployments
 
-### 3. Deploy
-```bash
-terraform init
-terraform plan
-terraform apply
-```
+IAM roles configured for least privilege
 
----
+Logging via CloudWatch
 
-## CI/CD Workflow (GitHub Actions)
+Scalable service architecture
 
-```yaml
-# .github/workflows/deploy.yml (example)
-name: CI/CD Pipeline
 
-on:
-  push:
-    branches: [main]
+Prerequisites
 
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+AWS CLI configured
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
+Terraform installed
 
-      - name: Build Docker Image
-        run: docker build -t my-app .
+GitHub Actions secret keys set for AWS access
 
-      - name: Push to ECR
-        run: |
-          aws ecr get-login-password | docker login --username AWS --password-stdin <your-ecr-repo>
-          docker tag my-app:latest <your-ecr-repo>:latest
-          docker push <your-ecr-repo>:latest
+Docker installed
 
-      - name: Deploy Terraform
-        run: |
-          terraform init
-          terraform apply -auto-approve
-```
 
----
+How to Deploy
 
-## Security Considerations
+1. Clone the repo
 
-- IAM roles scoped to specific actions (e.g., ECR push, ECS update)
-- No hardcoded secrets; use GitHub Secrets or AWS SSM
-- VPC isolation enabled if using ECS Fargate
-- All traffic via HTTPS
 
----
+2. Run terraform init to initialize the backend
 
-## Lessons Learned
 
-- How to automate end-to-end infrastructure + app deployments
-- Importance of separating infra and app logic
-- Real-world ECS deployment flow using Terraform and Docker
+3. Run terraform apply to provision infrastructure
+
+
+4. Push your code to the main branch
+
+
+5. GitHub Actions will:
+
+Build and tag Docker image
+
+Push to ECR
+
+Update ECS task definition
+
+
+
+
+Rollback Strategy
+
+Task definitions are versioned
+
+In case of a failed deploy, ECS can be manually reverted to the last known good revision using AWS CLI:
+
+
+aws ecs update-service --cluster your-cluster-name --service your-service-name --task-definition previous-task-def:revision
+
+Security
+
+IAM roles follow least-privilege principle
+
+AWS Secrets Manager or GitHub Secrets used for credentials
+
+Network restricted via security groups
+
+
+Monitoring
+
+CloudWatch Logs enabled for ECS and CI/CD events
+
+Suggested: Add CloudWatch Alarms or SNS notifications for critical failures
+
+
+Future Enhancements
+
+Blue/Green deployments with CodeDeploy
+
+Integrate with CloudFormation guardrails
+
+Automated test suite before deploy
+
+
+License
+
+MIT
+
 
 ---
 
-## Future Improvements
+Maintained by [Your Name]. Forks and feedback welcome.
 
-- Add automated testing step in CI
-- Blue/green or canary deployments via ECS
-- Alerting and rollback mechanisms
 
----
-
-## Author
-
-**Steven Lewis**  
-[GitHub](https://github.com/sjlewis25)  
-Cloud Engineer | AWS | Terraform | CI/CD | Serverless
