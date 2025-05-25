@@ -1,118 +1,53 @@
-AWS Docker CI/CD Pipeline Project
-
-This project demonstrates a real-world, production-style CI/CD pipeline using Docker, GitHub Actions, and AWS (ECS, ECR, S3) managed entirely with Terraform.
-
-Purpose
-
-The goal of this project is to automate the process of building, testing, and deploying Dockerized applications using a secure, scalable AWS architecture—without touching the AWS Console.
-
-Architecture Overview
-
-GitHub Actions: Triggers on code push to build and test Docker image.
-
-Amazon ECR: Stores the built Docker image.
-
-Terraform: Provisions all AWS infrastructure including ECS, ECR, and supporting IAM roles.
-
-Amazon ECS (Fargate): Deploys the container as a service.
-
-S3: Optional usage for storing Terraform state remotely.
-
-
-
-
-Features
-
-Push-to-deploy workflow
-
-Terraform IaC with remote backend support
-
-Rollback-ready ECS deployments
-
-IAM roles configured for least privilege
-
-Logging via CloudWatch
-
-Scalable service architecture
-
-
-Prerequisites
-
-AWS CLI configured
-
-Terraform installed
-
-GitHub Actions secret keys set for AWS access
-
-Docker installed
-
-
-How to Deploy
-
-1. Clone the repo
-
-
-2. Run terraform init to initialize the backend
-
-
-3. Run terraform apply to provision infrastructure
-
-
-4. Push your code to the main branch
-
-
-5. GitHub Actions will:
-
-Build and tag Docker image
-
-Push to ECR
-
-Update ECS task definition
-
-
-
-
-Rollback Strategy
-
-Task definitions are versioned
-
-In case of a failed deploy, ECS can be manually reverted to the last known good revision using AWS CLI:
-
-
-aws ecs update-service --cluster your-cluster-name --service your-service-name --task-definition previous-task-def:revision
-
-Security
-
-IAM roles follow least-privilege principle
-
-AWS Secrets Manager or GitHub Secrets used for credentials
-
-Network restricted via security groups
-
-
-Monitoring
-
-CloudWatch Logs enabled for ECS and CI/CD events
-
-Suggested: Add CloudWatch Alarms or SNS notifications for critical failures
-
-
-Future Enhancements
-
-Blue/Green deployments with CodeDeploy
-
-Integrate with CloudFormation guardrails
-
-Automated test suite before deploy
-
-
-License
-
-MIT
-
-
----
-
-Maintained by [Your Name]. Forks and feedback welcome.
-
-
+# Docker CI/CD Pipeline (AWS + GitHub Actions + Terraform)
+
+This project builds a fully automated CI/CD pipeline to deploy a Dockerized web app on AWS using GitHub Actions, ECS, and Terraform.
+
+## Why This Project
+I created this to simulate a real-world production deployment pipeline. I wanted hands-on experience with containerized app deployment, GitHub Actions for automation, and Infrastructure as Code using Terraform. The goal was to eliminate manual steps and learn how modern DevOps teams push code to production.
+
+## Architecture
+- Terraform – Provisions AWS resources (ECR, ECS, ALB, IAM, etc.)
+- GitHub Actions – Automates Docker builds and deployments
+- Docker – Containers the web app for consistent deployment
+- Amazon ECR – Stores built container images
+- Amazon ECS (Fargate) – Runs containers without managing servers
+- Application Load Balancer (ALB) – Routes traffic to ECS tasks
+- IAM – Manages permissions securely across AWS services
+
+## CI/CD Workflow
+1. Code is pushed to the GitHub repository.
+2. GitHub Actions workflow is triggered.
+3. Workflow builds a Docker image.
+4. Image is pushed to Amazon ECR.
+5. Terraform applies any infrastructure changes and updates the ECS service.
+6. ECS pulls the new image and deploys it behind the ALB.
+
+## File Structure
+```
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # GitHub Actions workflow
+├── terraform/
+│   └── main.tf                   # Infrastructure as Code (Terraform config)
+├── app/
+│   └── Dockerfile                # Sample containerized web app
+├── README.md
+└── ...
+```
+
+## Lessons Learned
+- Building a secure CI/CD pipeline requires strict IAM control and secret management.
+- ECS Fargate handles orchestration well but demands clean networking and role setups.
+- Terraform state must be handled with care—versioning and modularity matter.
+- CI/CD taught me how to trust the pipeline—every step should be reproducible and auditable.
+- Logging and error visibility are key to debugging broken pipelines.
+
+## Project Highlights
+- Push-to-deploy with no manual steps
+- GitHub Actions securely integrates with AWS
+- Clean, modular Terraform for infrastructure provisioning
+- Real-world CI/CD experience from scratch
+
+## GitHub Repository
+View the full project on GitHub: https://github.com/sjlewis25/aws-docker-cicd
