@@ -3,7 +3,7 @@
 This project builds a fully automated CI/CD pipeline to deploy a Dockerized web app on AWS using GitHub Actions, ECS, and Terraform.
 
 ## Why This Project
-I created this to simulate a real-world production deployment pipeline. I wanted hands-on experience with containerized app deployment, GitHub Actions for automation, and Infrastructure as Code using Terraform. The goal was to eliminate manual steps and learn how modern DevOps teams push code to production.
+This project was built to demonstrate a real-world CI/CD pipeline using modern DevOps tools. It automates the deployment of a containerized application from GitHub to AWS with zero manual steps. The focus is on delivering production-ready infrastructure that is scalable, maintainable, and aligned with best practices in cloud automation.
 
 ## Architecture
 - Terraform – Provisions AWS resources (ECR, ECS, ALB, IAM, etc.)
