@@ -8,46 +8,43 @@ To simulate a real-world, zero-touch deployment pipeline used in production envi
 
 ## Architecture Overview
 
-- GitHub Actions – Automates the entire CI/CD pipeline
-- Docker – Builds a consistent, portable container image
-- Amazon ECR – Stores Docker images
-- Amazon ECS (Fargate) – Deploys containers without managing servers
-- AWS CLI – Provisions VPC, subnet, route table, security group, ECS cluster, and ECS service
-- IAM – Defines execution role for ECS tasks
+- GitHub Actions – Automates the entire CI/CD pipeline  
+- Docker – Builds a consistent, portable container image  
+- Amazon ECR – Stores Docker images  
+- Amazon ECS (Fargate) – Deploys containers without managing servers  
+- AWS CLI – Provisions VPC, subnet, route table, security group, ECS cluster, and ECS service  
+- IAM – Defines execution role for ECS tasks  
 
 ## CI/CD Workflow
 
-1. Push to the `main` branch triggers GitHub Actions
-2. Docker image is built and pushed to ECR
-3. ECS cluster and networking resources are created if missing
-4. Task definition is registered with the new image
-5. ECS service is created or updated to deploy the container
+1. Push to the `main` branch triggers GitHub Actions  
+2. Docker image is built and pushed to ECR  
+3. ECS cluster and networking resources are created if missing  
+4. Task definition is registered with the new image  
+5. ECS service is created or updated to deploy the container  
 
 ## File Structure
 
-.
-├── .github/
-│   └── workflows/
-│       └── deploy.yml           # GitHub Actions workflow file
-├── Dockerfile                   # Sample app container
-├── README.md
-└── ...
+- .github/
+  - workflows/
+    - deploy.yml        → GitHub Actions workflow file
+- Dockerfile            → Sample app container
+- README.md             → Project documentation
 
 ## Lessons Learned
 
-- ECS Fargate deployment requires precise networking and IAM configuration
-- Infrastructure creation using the AWS CLI inside a CI/CD pipeline must handle timing and dependency sequencing
-- Dynamic ECS deployments without Terraform are possible, but require careful control flow
-- A push-to-deploy pipeline must be idempotent and error-aware
+- ECS Fargate deployment requires precise networking and IAM configuration  
+- Infrastructure creation using the AWS CLI inside a CI/CD pipeline must handle timing and dependency sequencing  
+- Dynamic ECS deployments without Terraform are possible, but require careful control flow  
+- A push-to-deploy pipeline must be idempotent and error-aware  
 
 ## Project Highlights
 
-- Fully automated deployment from GitHub to AWS
-- Docker image built and deployed with no manual steps
-- Infrastructure provisioned on the fly using AWS CLI
-- ECS task and service deployment managed entirely by GitHub Actions
+- Fully automated deployment from GitHub to AWS  
+- Docker image built and deployed with no manual steps  
+- Infrastructure provisioned on the fly using AWS CLI  
+- ECS task and service deployment managed entirely by GitHub Actions  
 
 ## GitHub Repository
 
-View the project: https://github.com/sjlewis25/aws-docker-cicd
-
+View the project: [https://github.com/sjlewis25/aws-docker-cicd](https://github.com/sjlewis25/aws-docker-cicd)
