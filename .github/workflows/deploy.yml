@@ -31,7 +31,12 @@ jobs:
           docker tag myapp:latest 246651824707.dkr.ecr.us-east-1.amazonaws.com/myapp-repo:latest
           docker push 246651824707.dkr.ecr.us-east-1.amazonaws.com/myapp-repo:latest
 
+      - name: Create ECS Cluster (if missing)
+        run: |
+          aws ecs describe-clusters --clusters myapp-cluster | grep myapp-cluster || aws ecs create-cluster --cluster-name myapp-cluster
+
       - name: Deploy to Amazon ECS
         run: |
           aws ecs update-service --cluster myapp-cluster --service myapp-service --force-new-deployment
+
 
