@@ -31,48 +31,46 @@ jobs:
           docker tag myapp:latest 246651824707.dkr.ecr.us-east-1.amazonaws.com/myapp-repo:latest
           docker push 246651824707.dkr.ecr.us-east-1.amazonaws.com/myapp-repo:latest
 
-      - name: Create ECS Cluster (if missing)
+      - name: Create ECS Cluster and Wait for Availability
         run: |
-          aws ecs describe-clusters --clusters myapp-cluster | grep myapp-cluster || aws ecs create-cluster --cluster-name myapp-cluster
+          aws ecs describe-clusters --clusters myapp-cluster --query 'failures' --output text | grep "myapp-cluster" && \
+          aws ecs create-cluster --cluster-name myapp-cluster
 
-          echo "Waiting for ECS cluster to be ready..."
-          for i in {1..10}; do
-            CLUSTER_STATE=$(aws ecs describe-clusters --clusters myapp-cluster --query 'clusters[0].status' --output text)
-            if [ "$CLUSTER_STATE" = "ACTIVE" ]; then
-              echo "Cluster is ready."
+          echo "Waiting for ECS cluster to become ACTIVE..."
+          for i in {1..12}; do
+            STATUS=$(aws ecs describe-clusters --clusters myapp-cluster --query 'clusters[0].status' --output text)
+            echo "Status: $STATUS"
+            if [ "$STATUS" = "ACTIVE" ]; then
+              echo "Cluster is ACTIVE."
               break
             fi
-            echo "Still waiting... ($i)"
-            sleep 3
+            sleep 5
           done
+
+          if [ "$STATUS" != "ACTIVE" ]; then
+            echo "Cluster is not active after waiting. Exiting."
+            exit 1
+          fi
 
       - name: Create Networking Resources
         run: |
-          # Create VPC
           VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'Vpc.VpcId' --output text)
           aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-support "{\"Value\":true}"
           aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-hostnames "{\"Value\":true}"
 
-          # Create Subnet
           SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.1.0/24 --availability-zone us-east-1a --query 'Subnet.SubnetId' --output text)
 
-          # Create Internet Gateway
           IGW_ID=$(aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' --output text)
           aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID
 
-          # Create Route Table
           RT_ID=$(aws ec2 create-route-table --vpc-id $VPC_ID --query 'RouteTable.RouteTableId' --output text)
           aws ec2 create-route --route-table-id $RT_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW_ID
           aws ec2 associate-route-table --subnet-id $SUBNET_ID --route-table-id $RT_ID
-
-          # Modify subnet to auto-assign public IPs
           aws ec2 modify-subnet-attribute --subnet-id $SUBNET_ID --map-public-ip-on-launch
 
-          # Create Security Group
           SG_ID=$(aws ec2 create-security-group --group-name myapp-sg --description "Allow HTTP" --vpc-id $VPC_ID --query 'GroupId' --output text)
           aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol tcp --port 80 --cidr 0.0.0.0/0
 
-          # Export values for later steps
           echo "SUBNET_ID=$SUBNET_ID" >> $GITHUB_ENV
           echo "SG_ID=$SG_ID" >> $GITHUB_ENV
 
@@ -103,7 +101,7 @@ jobs:
 
       - name: Create ECS Service (if missing)
         run: |
-          aws ecs describe-services --cluster myapp-cluster --services myapp-service | grep myapp-service || \
+          aws ecs describe-services --cluster myapp-cluster --services myapp-service --query 'services[0].serviceName' --output text | grep myapp-service || \
           aws ecs create-service \
             --cluster myapp-cluster \
             --service-name myapp-service \
